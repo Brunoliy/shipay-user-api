@@ -1,0 +1,25 @@
+version: "3.3"
+services:
+  db:
+    build:
+      context: ./local_infra
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./local_infra/data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    tty: true
+    networks:
+      - local-bridge
+
+networks:
+  local-bridge:
+    driver: bridge
