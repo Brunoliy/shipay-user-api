@@ -35,7 +35,7 @@ class FastApiManager:
         api_router.include_router(
             system_state_router, prefix="/v1", tags=["System State"]
         )
-        api_router.include_router(users_route, prefix="/v1", tags=["Post"])
+        api_router.include_router(users_route, prefix="/v1", tags=["Users"])
 
         self._app.include_router(api_router)
 

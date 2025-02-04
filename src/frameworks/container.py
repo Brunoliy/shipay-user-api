@@ -2,6 +2,8 @@ from dependency_injector import containers, providers
 
 from domain.use_cases.add_user import AddUserUseCase
 from domain.use_cases.get_all_user_info import GetAllUserInfoUseCase
+from domain.use_cases.get_role_by_id import GetRoleByIdUseCase
+from domain.use_cases.get_user_by_id_sql import GetUserByIdSqlUseCase
 from frameworks.database.postgres_manager import PostgresqlManager
 from interface_adapters.data.repositories.user_repository import UserRepository
 
@@ -31,3 +33,10 @@ class FrameworkContainer(containers.DeclarativeContainer):
     add_user_use_case: AddUserUseCase = providers.Factory(
         AddUserUseCase, repository=user_repository
     )
+    get_role_by_id_use_case: GetRoleByIdUseCase = providers.Factory(
+        GetRoleByIdUseCase, repository=user_repository
+    )
+    get_user_by_id_sql_use_case: GetUserByIdSqlUseCase = providers.Factory(
+        GetUserByIdSqlUseCase, repository=user_repository
+    )
+

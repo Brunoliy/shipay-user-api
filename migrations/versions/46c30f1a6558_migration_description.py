@@ -7,6 +7,7 @@ Create Date: 2025-02-02 20:19:01.724113
 """
 from alembic import op
 import sqlalchemy as sa
+from datetime import datetime
 
 
 # revision identifiers, used by Alembic.
@@ -19,33 +20,65 @@ def upgrade() -> None:
     # Criar tabela roles
     op.create_table(
         'roles',
-        sa.Column('role_id', sa.Integer, primary_key=True, index=True),
-        sa.Column('role_description', sa.String, nullable=False)
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('description', sa.String, nullable=False)
     )
+
+    # Inserir dados na tabela roles
+    op.execute("""
+        INSERT INTO roles (id, description) VALUES 
+        (1, 'Admin'),
+        (2, 'Manager'),
+        (3, 'User'),
+        (4, 'Guest'),
+        (5, 'Support'),
+        (6, 'Developer'),
+        (7, 'QA'),
+        (8, 'Moderator'),
+        (9, 'Sales'),
+        (10, 'Customer Success');
+    """)
 
     # Criar tabela users
     op.create_table(
         'users',
-        sa.Column('user_id', sa.Integer, primary_key=True, index=True),
-        sa.Column('user_name', sa.String, nullable=False),
-        sa.Column('user_email', sa.String, nullable=False),
-        sa.Column('user_password', sa.String, nullable=False),
-        sa.Column('role_id', sa.Integer, sa.ForeignKey('roles.role_id'), nullable=False)
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('name', sa.String, nullable=False),
+        sa.Column('email', sa.String, nullable=False, unique=True),
+        sa.Column('password', sa.String, nullable=False),
+        sa.Column('role_id', sa.Integer, sa.ForeignKey('roles.id'), nullable=True),
+        sa.Column('created_at', sa.DateTime, nullable=False, default=datetime.utcnow),
+        sa.Column('updated_at', sa.DateTime, nullable=False, default=datetime.utcnow)
     )
 
     # Criar tabela claims
     op.create_table(
         'claims',
-        sa.Column('claim_id', sa.Integer, primary_key=True, index=True),
-        sa.Column('claim_description', sa.String, nullable=False),
-        sa.Column('is_active', sa.Boolean, nullable=False, default=True)
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('description', sa.String, nullable=False),
+        sa.Column('active', sa.Boolean, nullable=False, server_default=sa.text("true"))
     )
 
-    # Criar tabela user_claims (relação entre users e claims)
+    # Inserir dados na tabela claims
+    op.execute("""
+        INSERT INTO claims (id, description, active) VALUES 
+        (1, 'View_Dashboard', true),
+        (2, 'Edit_User', true),
+        (3, 'Delete_User', true),
+        (4, 'Manage_Roles', true),
+        (5, 'Access_Reports', true),
+        (6, 'Create_Content', true),
+        (7, 'Edit_Content', true),
+        (8, 'Delete_Content', true),
+        (9, 'View_Logs', true),
+        (10, 'Manage_Settings', true);
+    """)
+
+    # Criar tabela user_claim (relação entre users e claims)
     op.create_table(
         'user_claims',
-        sa.Column('user_id', sa.Integer, sa.ForeignKey('users.user_id'), primary_key=True),
-        sa.Column('claim_id', sa.Integer, sa.ForeignKey('claims.claim_id'), primary_key=True)
+        sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id', ondelete="CASCADE"), primary_key=True),
+        sa.Column('claim_id', sa.Integer, sa.ForeignKey('claims.id', ondelete="CASCADE"), primary_key=True)
     )
 
 def downgrade() -> None:

@@ -1,56 +1,65 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from domain.ports.users import RolesOutputPort, UsersOutputPort
 from domain.use_cases.add_user import AddUserUseCase
 from domain.use_cases.get_all_user_info import GetAllUserInfoUseCase
+from domain.use_cases.get_role_by_id import GetRoleByIdUseCase
+from domain.use_cases.get_user_by_id_sql import GetUserByIdSqlUseCase
 from frameworks.container import FrameworkContainer
-from interface_adapters.dtos.users import AddUserInputDTO, UserOutputDTO
+from interface_adapters.dtos.users import AddUserInputDTO
 
 users_route = APIRouter()
 
 
-@users_route.get(
-    "/users/info", response_model=UserOutputDTO
-)
+@users_route.get("/users/user/info")
 @inject
 async def get_user_info(
     user_id: int,
     use_case: GetAllUserInfoUseCase = Depends(
         Provide[FrameworkContainer.get_all_user_info_use_case]
     ),
-) -> UserOutputDTO:
-    """Route to upload a user mood"""
-    try:
-        output_use_case = await use_case(user_id=user_id)
-        return UserOutputDTO(**output_use_case.dict())
-    except Exception as error:
-        return {"error": f"{error}"}
+) -> UsersOutputPort:
+    """Route to fetch user basic info by the user_id."""
+    return await use_case(user_id=user_id)
 
-@users_route.post("/users/add/", response_model=UserOutputDTO)
+@users_route.get("/users/user/sqlinfo")
 @inject
-async def add_user(
+async def get_user_info_sql(
+    user_id: int,
+    use_case: GetUserByIdSqlUseCase = Depends(
+        Provide[FrameworkContainer.get_user_by_id_sql_use_case]
+    ),
+) -> UsersOutputPort:
+    """Route to fetch user basic info by the user_id."""
+    return await use_case(user_id=user_id)
+
+@users_route.get("/users/role/info")
+@inject
+async def get_role_by_id(
+    role_id: int,
+    use_case: GetRoleByIdUseCase = Depends(
+        Provide[FrameworkContainer.get_role_by_id_use_case]
+    ),
+) -> RolesOutputPort:
+    """Route to fetch user basic info by the user_id."""
+    return await use_case(role_id=role_id)
+
+
+@users_route.post("/users/create/")
+@inject
+async def create_user(
     input_dto: AddUserInputDTO,
     use_case: AddUserUseCase = Depends(Provide[FrameworkContainer.add_user_use_case]),
-) -> UserOutputDTO:
+):
     """Route to add a new user."""
-    try:
-        # Criar o objeto de entrada para o use case
-        input_use_case = AddUserInputDTO(
-            user_name=input_dto.user_name,
-            user_email=input_dto.user_email,
-            user_password=input_dto.user_password,
-            role_id=input_dto.role_id
-        )
+    input_use_case = AddUserInputDTO(
+        name=input_dto.name,
+        email=input_dto.email,
+        role_id=input_dto.role_id,
+        claims=[claim for claim in input_dto.claims],
+        password=input_dto.password,
+    )
 
-        # Chamar o use case para adicionar o usuário
-        output_use_case = await use_case(input_use_case)
-
-        # Retornar o DTO de saída
-        return UserOutputDTO(
-            user_id=output_use_case.user_id,
-            user_name=output_use_case.user_name,
-            user_email=output_use_case.user_email,
-            role_id=output_use_case.role_id
-        )
-    except Exception as error:
-        raise HTTPException(status_code=400, detail=str(error))
+    await use_case(input_use_case)
+    return input_dto

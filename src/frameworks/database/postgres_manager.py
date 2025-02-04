@@ -26,10 +26,10 @@ class PostgresqlManager(DatabaseService):
 
     def __init__(self) -> None:
         self._host: str = os.environ.get("DB_HOST", "localhost")
-        self._port: str = os.environ.get("DB_PORT", "5432")
+        self._port: str = os.environ.get("DB_PORT", "5435")
         self._database: str = os.environ.get("DB_DATABASE", "shipay_users_db")
-        self._user: str = os.environ.get("DB_USER", "shipay")
-        self._password: str = os.environ.get("DB_PASSWORD", "shipay")
+        self._user: str = os.environ.get("DB_USER", "postgres")
+        self._password: str = os.environ.get("DB_PASSWORD", "postgres")
         self._engine: AsyncEngine = None
         self._session_factory: async_scoped_session = None
         self._logger = logging.getLogger(

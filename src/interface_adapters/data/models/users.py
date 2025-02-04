@@ -1,39 +1,68 @@
 # pylint: disable=R0801,R0902
 from __future__ import annotations
 
-from sqlalchemy import Column, Integer, String, select
-from sqlalchemy.engine import Result
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import Select
+from datetime import datetime
 
-from interface_adapters.data.models.base import Model
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
-
-class UserModel(Model):
-    """Database representation for table user"""
-
-    user_id = Column(Integer, primary_key=True, index=True)
-    user_name = Column(String)
-    user_email = Column(String)
-    user_password = Column(String)
-    role_id = Column(Integer, Foreign_key="roles.role_id")
-
-    @classmethod
-    async def add(cls, session: AsyncSession, user: UserModel) -> None:
-        """Add a new user."""
-        await session.add(user)
-        await session.commit()
-
-    @classmethod
-    async def find_info_by_id(cls, session: AsyncSession, user_id: int) -> UserModel:
-        ...
-
-    @classmethod
-    async def find_by_role_id(cls, session: AsyncSession, role_id: int) -> UserModel:
-        """Find by its id."""
-        # query: Select = select(cls).filter(cls.role_id == role_id)
-        # result: Result = await session.execute(query)
-        # user = result.scalars().first()
-        # return user.user_id if user else None
+Base = declarative_base()
 
 
+class UserClaim(Base):
+    """Database representation for table user_claims"""
+
+    __tablename__ = "user_claims"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    claim_id = Column(Integer, ForeignKey("claims.id"), primary_key=True)
+
+    # user and claim relationship
+    user = relationship("User", back_populates="user_claims")
+    claim = relationship("Claim", back_populates="user_claims")
+
+
+class Claim(Base):
+    """Database representation for table claims"""
+
+    __tablename__ = "claims"
+
+    id = Column(Integer, primary_key=True)
+    description = Column(String, nullable=False)
+    active = Column(Integer, default=True)
+
+    # user_claims relationship
+    user_claims = relationship("UserClaim", back_populates="claim")
+
+
+class Role(Base):
+    """Database representation for table roles"""
+
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True)
+    description = Column(String, nullable=False)
+
+    # users relationship
+    users = relationship("User", back_populates="role")
+
+
+class User(Base):
+    """Database representation for table users"""
+
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    role_id = Column(Integer, ForeignKey("roles.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # roles relationship
+    role = relationship("Role", back_populates="users")
+
+    # user_claims relationship
+    user_claims = relationship("UserClaim", back_populates="user")

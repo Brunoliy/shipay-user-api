@@ -1,0 +1,18 @@
+6.- Nossos analistas de qualidade reportaram uma falha que só acontece em ambientes diferentes do local/desenvolvimento,
+os engenheiros responsáveis pelo ambiente de Homologação já descartaram problemas de infra-estrutura, temos que levantar o que está acontecendo.
+
+R: No erro está falando que core.settings näo possui o atributo WALLET_X_TOKEN_MAX_AGE,
+o problema pode estar sendo causado pela falta de autenticação ou expiração do token.
+
+
+*CODE REVIEW DO DIRETORIO BOT*
+ln 19 Possui URI exposta, poderia estar em um arquivo de configuração.
+Prints poderiam ser trocados por logs, utilizar logging com o parametro extra, te permite pesquisar no logs insights da aws
+ln 48 conexão com o banco de dados poderia ser fechada
+ln 69 esta realizando print de uma senha, isso é um risco de segurança
+ln 52-58 e ln 63-76 poderiam ser reduzidos por meio de um index utilizando enumerate
+
+
+
+
+

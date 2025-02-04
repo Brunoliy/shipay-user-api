@@ -5,21 +5,24 @@ from domain.interfaces.output_port import OutputPort
 
 
 @dataclass
-class Role:
-    """Object to describe the role of a user."""
-    description: str
-
-@dataclass
-class Claims:
+class ClaimsPort:
     """Object to describe the claims of a user."""
+
     description: str
-    is_active: bool
+    active: bool | None
+
 
 @dataclass
 class UsersOutputPort(OutputPort):
-    """Object to describe the result of mood upload."""
+    """Object to describe user output port."""
 
-    user_name: str
-    user_email: str
-    roles: list[Role]
-    claims: list[Claims]
+    name: str
+    email: str
+    role: str
+    claims: list[ClaimsPort]
+
+@dataclass
+class RolesOutputPort(OutputPort):
+    """Object to describe role output port."""
+
+    description: str

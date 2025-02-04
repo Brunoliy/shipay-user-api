@@ -3,3 +3,4 @@
 .__pycache__/
 venv
 .vscode
+local_infra/data/
