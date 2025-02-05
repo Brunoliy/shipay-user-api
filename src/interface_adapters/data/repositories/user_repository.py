@@ -64,13 +64,15 @@ class UserRepository:
 
         return UsersOutputPort(**user_dict)
 
-    async def find_user_by_id_sql(self, user_id: int) -> UsersOutputPort | None:
+    async def find_user_by_id_using_raw(self, user_id: int) -> UsersOutputPort | None:
+        """Find user by user_id using raw SQL."""
         sql_query = text("""
             SELECT 
                 u.name AS user_name, 
                 u.email AS user_email, 
                 r.description AS role, 
-                c.description AS claim_description
+                c.description AS claim_description,
+                c.active AS claim_active
             FROM users u
             LEFT JOIN roles r ON u.role_id = r.id
             LEFT JOIN user_claims uc ON u.id = uc.user_id
@@ -90,7 +92,10 @@ class UserRepository:
                 "name": rows[0].user_name,
                 "email": rows[0].user_email,
                 "role": rows[0].role,
-                "claims": [row.claim_description for row in rows if row.claim_description],
+                "claims": [
+                    ClaimsPort(description=row.claim_description, active=row.claim_active)
+                    for row in rows if row.claim_description
+                ],
             }
 
             return UsersOutputPort(**user_data)

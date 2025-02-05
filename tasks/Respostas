@@ -1,5 +1,6 @@
 6.- Nossos analistas de qualidade reportaram uma falha que só acontece em ambientes diferentes do local/desenvolvimento,
-os engenheiros responsáveis pelo ambiente de Homologação já descartaram problemas de infra-estrutura, temos que levantar o que está acontecendo.
+os engenheiros responsáveis pelo ambiente de Homologação já descartaram problemas de infra-estrutura, temos que levantar o que
+está acontecendo.
 
 R: No erro está falando que core.settings näo possui o atributo WALLET_X_TOKEN_MAX_AGE,
 o problema pode estar sendo causado pela falta de autenticação ou expiração do token.
@@ -12,6 +13,16 @@ ln 48 conexão com o banco de dados poderia ser fechada
 ln 69 esta realizando print de uma senha, isso é um risco de segurança
 ln 52-58 e ln 63-76 poderiam ser reduzidos por meio de um index utilizando enumerate
 
+
+8.- Qual ou quais Padrões de Projeto/Design Patterns você utilizaria para normalizar serviços de terceiros
+(tornar múltiplas interfaces de diferentes fornecedores uniforme), por exemplo serviços de disparos de e-mails,
+ou então disparos de SMS. ATENÇÃO: Não é necessário implementar o Design Pattern, basta descrever qual você
+utilizaria e por quais motivos optou pelo mesmo.
+
+R: Utilizaria o padrão de projeto Adapter, pois ele permite que interfaces incompatíveis trabalhem juntas.
+No exemplo citado, disparos de e-mails e SMS, poderiam ser adaptados para uma interface comum e criar
+adaptadores para cada serviço de terceiros, assim, a aplicação não precisaria se preocupar com a diferença
+de implementação de cada serviço, apenas com a interface comum.
 
 
 

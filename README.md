@@ -1,6 +1,6 @@
 # shipay-user-api
 
-An awesome Mood Sensing APP
+An awesome Onboarding APP
 
 # API Documentation
 We use swagger to documentation our API. The swagger provides all information we need to use our routes

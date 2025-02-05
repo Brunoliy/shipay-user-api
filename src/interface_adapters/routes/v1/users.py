@@ -5,7 +5,7 @@ from domain.ports.users import RolesOutputPort, UsersOutputPort
 from domain.use_cases.add_user import AddUserUseCase
 from domain.use_cases.get_all_user_info import GetAllUserInfoUseCase
 from domain.use_cases.get_role_by_id import GetRoleByIdUseCase
-from domain.use_cases.get_user_by_id_sql import GetUserByIdSqlUseCase
+from domain.use_cases.get_user_by_id_using_raw import GetUserByIdUsingRawUseCase
 from frameworks.container import FrameworkContainer
 from interface_adapters.dtos.users import AddUserInputDTO
 
@@ -23,12 +23,12 @@ async def get_user_info(
     """Route to fetch user basic info by the user_id."""
     return await use_case(user_id=user_id)
 
-@users_route.get("/users/user/sqlinfo")
+@users_route.get("/users/user/rawinfo")
 @inject
-async def get_user_info_sql(
+async def get_user_info_using_raw(
     user_id: int,
-    use_case: GetUserByIdSqlUseCase = Depends(
-        Provide[FrameworkContainer.get_user_by_id_sql_use_case]
+    use_case: GetUserByIdUsingRawUseCase = Depends(
+        Provide[FrameworkContainer.get_user_by_id_using_raw_use_case]
     ),
 ) -> UsersOutputPort:
     """Route to fetch user basic info by the user_id."""
